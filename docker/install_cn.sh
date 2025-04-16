@@ -8,3 +8,6 @@ echo   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docke
 apt-get update
 
 apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin  
+
+docker --version
+echo "Docker has been successfully installed!"

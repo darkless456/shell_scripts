@@ -9,6 +9,7 @@ BACKUP_DIR="/backup"          # Directory to store backups
 KEEP_BACKUPS=3                # Number of backups to retain
 TIME_NOW="$(date +'%Y-%m-%d %H:%M:%S')"  # Current timestamp
 LOG_FILE="$BACKUP_DIR/backup.log"
+GDRIVE_FOLDER_ID="your_google_drive_folder_id_here"  # Google Drive folder ID for backup upload
 
 # Backup blacklist patterns (relative to APP_DIR)
 BLACKLIST=(
@@ -33,8 +34,9 @@ echo "==============================="
 
 # ============== Backup Generation ================
 BACKUP_FILE="$BACKUP_DIR/app_backup_$(date +'%Y-%m-%d_%H-%M-%S').tar.gz"
+LATEST_BACKUP=$(ls -t "$BACKUP_DIR"/app_backup_*.tar.gz 2>/dev/null | head -n1)
 
-# 生成排除参数
+# Generate exclude arguments
 exclude_args=()
 for pattern in "${BLACKLIST[@]}"; do
     exclude_args+=(--exclude="$pattern")
@@ -43,9 +45,41 @@ done
 if [ -d "$APP_DIR" ] && [ "$(ls -A "$APP_DIR")" ]; then
     echo "[📂 INFO] Creating backup of $APP_DIR (excluded patterns: ${BLACKLIST[*]})..." >> "$LOG_FILE"
     
-    # 执行备份命令
-    if tar -czf "$BACKUP_FILE" "${exclude_args[@]}" -C "$APP_DIR" . ; then
-        echo "[✅ SUCCESS] Backup created: ${BACKUP_FILE/$BACKUP_DIR\//}" >> "$LOG_FILE"
+    # Create a temporary backup
+    TEMP_BACKUP="/tmp/temp_backup_$(date +'%Y%m%d%H%M%S').tar.gz"
+    if tar -czf "$TEMP_BACKUP" "${exclude_args[@]}" -C "$APP_DIR" . ; then
+        echo "[✅ SUCCESS] Temporary backup created: $TEMP_BACKUP" >> "$LOG_FILE"
+        
+        # Extract the latest backup to a temporary directory for comparison
+        TEMP_DIR="/tmp/temp_backup_dir"
+        mkdir -p "$TEMP_DIR"
+        if [ -n "$LATEST_BACKUP" ]; then
+            tar -xzf "$LATEST_BACKUP" -C "$TEMP_DIR"
+        fi
+        
+        # Compare the contents of the directories
+        if [ -n "$LATEST_BACKUP" ] && diff -r "$APP_DIR" "$TEMP_DIR" >/dev/null; then
+            echo "[ℹ️ INFO] No changes detected. Skipping backup creation." >> "$LOG_FILE"
+            rm "$TEMP_BACKUP"
+        else
+            mv "$TEMP_BACKUP" "$BACKUP_FILE"
+            echo "[✅ SUCCESS] New backup created: ${BACKUP_FILE/$BACKUP_DIR\//}" >> "$LOG_FILE"
+            
+            # Upload the latest backup to Google Drive
+            if command -v rclone &> /dev/null; then
+                echo "[🚀 INFO] Uploading backup to Google Drive..." >> "$LOG_FILE"
+                if rclone copy "$BACKUP_FILE" "gdrive:$GDRIVE_FOLDER_ID"; then
+                    echo "[✅ SUCCESS] Backup uploaded to Google Drive" >> "$LOG_FILE"
+                else
+                    echo "[❌ ERROR] Failed to upload backup to Google Drive" >> "$LOG_FILE"
+                fi
+            else
+                echo "[⚠️ WARNING] rclone not found. Skipping Google Drive upload." >> "$LOG_FILE"
+            fi
+        fi
+        
+        # Clean up temporary directory
+        rm -rf "$TEMP_DIR"
     else
         echo "[❌ ERROR] Backup creation failed! Exit code: $?" >> "$LOG_FILE"
         exit 1
@@ -58,7 +92,7 @@ fi
 # ============== Backup Rotation ==================
 echo "[🧹 INFO] Cleaning up old backups (keeping latest $KEEP_BACKUPS)..." >> "$LOG_FILE"
 
-# 安全删除旧备份（保留日志文件）
+# Safely delete old backups (retain log file)
 cd "$BACKUP_DIR" || exit 1
 find . -maxdepth 1 -type f \( -name 'app_backup_*.tar.gz' \) | \
 sort -r | \
