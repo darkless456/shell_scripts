@@ -58,8 +58,8 @@ if "%ERRORLEVEL%"=="0" (
     @REM start "" "d:\path\to\sing-box.exe" >> %logfile%  :: Correct this path
 )
 
-rem D:
-rem cd D:\ProxyTools\sing-box
+D:
+cd D:\ProxyTools\sing-box
 start D:\ProxyTools\sing-box\RunHiddenConsole.exe D:\ProxyTools\sing-box\sing-box.exe run -c %configFile%"
 
 :: Log the end of the script
