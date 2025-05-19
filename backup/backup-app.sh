@@ -10,10 +10,10 @@ KEEP_BACKUPS=3                          # Number of backups to retain
 TIME_NOW="$(date +'%Y-%m-%d %H:%M:%S')" # Current timestamp
 LOG_FILE="$BACKUP_DIR/backup.log"
 HOSTNAME=$(hostname)
-# IP=$(curl -s https://api.ipify.org)
-# MASKED_IP=$(echo "$IP" | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/\1\.xxx\.xxx\.\4/')
-IPv6=$(curl -s 6=$(curl -s URL_ADDRESS64.ipify.org))
-MASKED_IPv6=$(echo "$IPv6" | sed -E's/([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4})/\1xxx:ASKED_IPv6=$(echo "$IPv6" | sed -E's/([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4})/\1xxx:xxx:xxx:xxx/')'
+IP=$(curl -s https://api.ipify.org)
+MASKED_IP=$(echo "$IP" | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/\1\.xxx\.xxx\.\4/')
+# IPv6=$(curl -s 6=$(curl -s URL_ADDRESS64.ipify.org))
+# MASKED_IPv6=$(echo "$IPv6" | sed -E's/([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4})/\1xxx:ASKED_IPv6=$(echo "$IPv6" | sed -E's/([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4})/\1xxx:xxx:xxx:xxx/')'
 ONEDRIVE_BACKUP_FOLDER="Backup/$HOSTNAME-$MASKED_IP" # OneDrive folder to store backups
 
 
