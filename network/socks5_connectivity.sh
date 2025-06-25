@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # 配置参数
-SOCKS5_ADDR="socks5.example.com"  # SOCKS5 服务器地址
-SOCKS5_PORT="1080"                # SOCKS5 服务器端口
-SOCKS5_USER="username001"
-SOCKS5_PASS="password001"
+SOCKS5_ADDR="2a14:67c0:118::1"  # SOCKS5 服务器地址
+SOCKS5_PORT="35000"                # SOCKS5 服务器端口
+SOCKS5_USER="alice"
+SOCKS5_PASS="alice..MVM"
 TEST_URL="https://www.google.com"
 UDP_TEST_SERVER="2001:4860:4860::8888"  # Google IPv6 DNS
 UDP_TEST_DOMAIN="bing.com"           # 测试域名
