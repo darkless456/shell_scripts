@@ -7,7 +7,7 @@ if [ "$EUID" -ne 0 ]
 fi
 
 # 下载最新的realm压缩包
-wget https://github.com/zhboner/realm/releases/download/v2.7.0/realm-x86_64-unknown-linux-gnu.tar.gz
+wget https://gh.ifamily.work/https://github.com/zhboner/realm/releases/download/v2.7.0/realm-x86_64-unknown-linux-gnu.tar.gz
 
 # 检查下载是否成功
 if [ $? -ne 0 ]; then
