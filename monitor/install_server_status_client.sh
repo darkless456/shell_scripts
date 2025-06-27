@@ -53,7 +53,7 @@ Group=root
 Environment="RUST_BACKTRACE=1"
 WorkingDirectory=/opt/ServerStatus
 # EnvironmentFile=/opt/ServerStatus/.env
-ExecStart=/opt/ServerStatus/stat_client -a "https://server.self-media.org/report" -u $HOSTNAME -p $PASSWORD --disable-extra
+ExecStart=/opt/ServerStatus/stat_client -a "https://server.self-media.org/report" -u $HOSTNAME -p $PASSWORD --disable-extra --ct 183.47.126.35:80 --cm 120.233.18.250:80 --cu 157.148.58.29:80
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 
@@ -80,3 +80,17 @@ systemctl status stat_client
 
 # 停止
 # systemctl stop stat_client
+
+# 重启
+# systemctl daemon-reload && systemctl restart stat_client && sleep 3 && systemctl status stat_client
+
+# 卸载 
+
+# systemctl daemon-reload && \
+# systemctl stop stat_client && \
+# systemctl disable stat_client && \
+# rm -f /etc/systemd/system/stat_client.service && \
+# rm -rf ${WORKSPACE} && \
+# systemctl daemon-reload && \
+# sleep 3 && \
+# systemctl status stat_client
